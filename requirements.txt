@@ -1,6 +1,6 @@
 requests
 bs4
 pandas
-demjson
+demjson3
 progressbar2
 pytesseract

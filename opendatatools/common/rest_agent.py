@@ -3,6 +3,9 @@ import requests
 import pandas as pd
 from bs4 import BeautifulSoup
 import numpy as np
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
 
 class RestAgent():
     def __init__(self):
@@ -29,7 +32,7 @@ class RestAgent():
     def do_request(self, url, param = None, method="GET", type="text", encoding = None, json = None, **kwargs):
         if self.proxies is None:
             if method == "GET":
-                res = self.session.get(url, params=param, **kwargs)
+                res = self.session.get(url, params=param, verify=False, **kwargs)
             else:
                 if json is not None:
                     res = self.session.post(url, json=json, **kwargs)
