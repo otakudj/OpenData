@@ -323,6 +323,14 @@ nbs_indicator_map = {
     'A16020K':'外商投资股份制企业实际利用外商直接投资金额_累计增长(%)',
 
     # 社会消费品零售总额
+    'A070101': '社会消费品零售总额_当期值(亿元)',
+    'A070102': '社会消费品零售总额_累计值(亿元)',
+    'A070103': '社会消费品零售总额_同比增长(%)',
+    'A070104': '社会消费品零售总额_累计增长(%)',
+    'A070105': '限上单位消费品零售额_当期值(亿元)',
+    'A070106': '限上单位消费品零售额_累计值(亿元)',
+    'A070107': '限上单位消费品零售额_同比增长(%)',
+    'A070108': '限上单位消费品零售额_累计增长(%)',
     'A150101':'社会消费品零售总额_当期值(亿元)',
     'A150102':'社会消费品零售总额_累计值(亿元)',
     'A150103':'社会消费品零售总额_同比增长(%)',
@@ -654,7 +662,7 @@ class NBSAgent(RestAgent):
         return self._get_qg_indicator('A01', 'A1602', dbcode = 'hgyd')
 
     def get_retail_sales(self):
-        return self._get_qg_indicator('A01', 'A1501', dbcode = 'hgyd')
+        return self._get_qg_indicator('A01', 'A0701', dbcode = 'hgyd')
 
     def get_online_retail_sales(self):
         return self._get_qg_indicator('A01', 'A1508', dbcode='hgyd')
