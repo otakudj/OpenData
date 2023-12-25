@@ -446,7 +446,7 @@ class NBSAgent(RestAgent):
             "rowcode": "zb",
             "colcode": "sj",
             "wds" : '[]',
-            "dfwds": '[{"wdcode":"sj","valuecode":"2000-"}, {"wdcode": "zb", "valuecode": "%s"}]' % (category),
+            "dfwds": '[{"wdcode":"sj","valuecode":"LAST36"}, {"wdcode": "zb", "valuecode": "%s"}]' % (category),
         }
 
         url = 'http://data.stats.gov.cn/easyquery.htm?cn=%s&zb=%s' % (cn, category)
