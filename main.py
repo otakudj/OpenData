@@ -3,10 +3,13 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 from time import sleep
 import numpy as np
+import pandas as pd
 
 from matplotlib.font_manager import FontManager
 import matplotlib
 matplotlib.rc("font", family='Microsoft YaHei')
+
+from data import date_gen, social_financing
 
 config = [
     {
@@ -23,15 +26,21 @@ config = [
         'func': 'get_retail_sales',
         'title': '社零',
         'utils': ['社会消费品零售总额_同比增长(%)'],
-    }
+    },
+    {
+        'func': '',
+        'title': '社融',
+        'utils': ['社会融资规模存量同比'],
+    },
+
 ]
 
 rows, columns = 2, 2
 
 
 def plot_line_graph(ax, title, date, value):
-    x_axis_data = date.values[:0:-1]  # x
-    y_axis_data = value.values[:0:-1]
+    x_axis_data = date.values  # x
+    y_axis_data = value.values
 
     x_axis_data = [date[:4] + '-' + date[4:] for date in x_axis_data]
 
@@ -57,24 +66,33 @@ if __name__ == '__main__':
         title = value['title']
         utils = value['utils']
 
-        print(f'{func} ...', end='')
-        rsp, msg = getattr(economy, func)()
-        df = rsp[rsp['indicator_name'] == utils[0]][['date', 'value']].reset_index(drop=True)
-        date = df['date']  # x
+        if func != '':
+            print(f'{func} ...', end='')
+            rsp, msg = getattr(economy, func)()
+            sleep(3)
+            df = rsp[rsp['indicator_name'] == utils[0]][['date', 'value']].reset_index(drop=True)
+            date = df['date']  # x
 
-        if func == 'get_M0_M1_M2':
-            df_attach = rsp[rsp['indicator_name'] == utils[1]][['date', 'value']].reset_index(drop=True)
-            for m1, m2 in zip(df['date'].values, df_attach['date'].values):
-                assert m1 == m2
-            value = df['value'] - df_attach['value']  # y
-        elif func == 'get_cpi':
-            value = df['value'] - 100
+            if func == 'get_M0_M1_M2':
+                df_attach = rsp[rsp['indicator_name'] == utils[1]][['date', 'value']].reset_index(drop=True)
+                for m1, m2 in zip(df['date'].values, df_attach['date'].values):
+                    assert m1 == m2
+                value = df['value'] - df_attach['value']  # y
+            elif func == 'get_cpi':
+                value = df['value'] - 100
+            else:
+                value = df['value']
+            value = value[:0:-1]
+            date = date[:0:-1]
         else:
-            value = df['value']
+            date = pd.Series(date_gen)
 
+            if title == '社融':
+                print(f'{title} ...', end='')
+                value = pd.Series(social_financing[-36:])
+
+            date = date[::-1]
         plot_line_graph(ax[ind // rows][ind % rows], title, date, value)
-
-        sleep(3)
         print('Done')
 
     # # CPI
