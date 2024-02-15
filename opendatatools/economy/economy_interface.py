@@ -82,6 +82,9 @@ def get_region_gdp(region):
 def get_gdp_q2q():
     return nbs_agent.get_gdp_q2q()
 
+def get_gdp_q():
+    return nbs_agent.get_gdp_q()
+
 def get_M0_M1_M2():
     return nbs_agent.get_M0_M1_M2()
 

@@ -13,14 +13,20 @@ from data import date_gen, social_financing
 
 config = [
     {
-        'func': 'get_M0_M1_M2',
-        'title': 'M1-M2增速差',
-        'utils': ['货币(M1)供应量_同比增长(%)', '货币和准货币(M2)供应量_同比增长(%)'],
+        'func': 'get_gdp_q',
+        'title': 'GDP',
+        'utils': ['分季国内生产总值指数'],
+        'unit': 'season',
     },
     {
         'func': 'get_cpi',
         'title': 'CPI',
         'utils': ['居民消费价格指数(上年同月=100)'],
+    },
+    {
+        'func': 'get_M0_M1_M2',
+        'title': 'M1-M2增速差',
+        'utils': ['货币(M1)供应量_同比增长(%)', '货币和准货币(M2)供应量_同比增长(%)'],
     },
     {
         'func': 'get_retail_sales',
@@ -35,10 +41,10 @@ config = [
 
 ]
 
-rows, columns = 2, 2
+rows, columns = 2, 3
 
 
-def plot_line_graph(ax, title, date, value):
+def plot_line_graph(ax, title, date, value, unit):
     x_axis_data = date.values  # x
     y_axis_data = value.values
 
@@ -55,7 +61,8 @@ def plot_line_graph(ax, title, date, value):
     # ax.set_xticks(y_axis_data)
     ax.tick_params(axis='x', labelrotation=45)
     tick_spacing = 12
-    ax.xaxis.set_major_locator(ticker.MultipleLocator(3))
+    if unit == 'month':
+        ax.xaxis.set_major_locator(ticker.MultipleLocator(3))
 
 
 if __name__ == '__main__':
@@ -65,6 +72,7 @@ if __name__ == '__main__':
         func = value['func']
         title = value['title']
         utils = value['utils']
+        unit = value.get('unit', 'month')
 
         if func != '':
             print(f'{func} ...', end='')
@@ -78,21 +86,35 @@ if __name__ == '__main__':
                 for m1, m2 in zip(df['date'].values, df_attach['date'].values):
                     assert m1 == m2
                 value = df['value'] - df_attach['value']  # y
-            elif func == 'get_cpi':
+            elif func in ['get_cpi', 'get_gdp_q']:
                 value = df['value'] - 100
             else:
                 value = df['value']
-            value = value[:0:-1]
-            date = date[:0:-1]
+
+            value = value[::-1]
+            date = date[::-1]
+
+            # remove last invalid data
+            if unit == 'month':
+                value = value[:-1]
+                date = date[:-1]
         else:
             date = pd.Series(date_gen)
 
             if title == '社融':
                 print(f'{title} ...', end='')
-                value = pd.Series(social_financing[-36:])
+                value = pd.Series(social_financing[-37:])
 
             date = date[::-1]
-        plot_line_graph(ax[ind // rows][ind % rows], title, date, value)
+
+        if unit == 'season':
+            date = date[-13:]
+            value = value[-13:]
+        elif unit == 'year':
+            date = date[-4:]
+            value = value[-4:]
+
+        plot_line_graph(ax[ind // columns][ind % columns], title, date, value, unit)
         print('Done')
 
     # # CPI

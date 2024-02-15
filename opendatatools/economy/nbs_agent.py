@@ -189,8 +189,9 @@ nbs_indicator_map = {
     'A01080102':'生产资料工业生产者出厂价格指数(上年同月=100)',
     'A01080103':'生活资料工业生产者出厂价格指数(上年同月=100)',
 
-    'A010301': '工业生产者购进价格指数(上年同月=100)',
+    # 'A010301': '工业生产者购进价格指数(上年同月=100)',
     'A010302': '工业生产者出厂价格指数(上年同月=100)',
+    'A010301': '分季国内生产总值指数',
 
     # GDP相关
     'A010101':'国内生产总值_当季值(亿元)',
@@ -454,7 +455,7 @@ class NBSAgent(RestAgent):
             "rowcode": "zb",
             "colcode": "sj",
             "wds" : '[]',
-            "dfwds": '[{"wdcode":"sj","valuecode":"LAST36"}, {"wdcode": "zb", "valuecode": "%s"}]' % (category),
+            "dfwds": '[{"wdcode":"sj","valuecode":"LAST38"}, {"wdcode": "zb", "valuecode": "%s"}]' % (category),
         }
 
         url = 'http://data.stats.gov.cn/easyquery.htm?cn=%s&zb=%s' % (cn, category)
@@ -636,6 +637,9 @@ class NBSAgent(RestAgent):
 
     def get_gdp_q2q(self):
         return self._get_qg_indicator('B01', 'A0104', dbcode = 'hgjd')
+
+    def get_gdp_q(self):
+        return self._get_qg_indicator('B01', 'A0103', dbcode = 'hgjd')
 
     def get_M0_M1_M2(self):
         return self._get_qg_indicator('A01', 'A0D01', dbcode = 'hgyd')
