@@ -447,7 +447,7 @@ class NBSAgent(RestAgent):
         return pd.DataFrame(list(nbs_city_map.items()), columns=['city', 'name'])
 
     # 获取全国指标
-    def _get_qg_indicator(self, cn, category, dbcode = 'hgyd'):
+    def _get_qg_indicator(self, cn, category, dbcode = 'hgyd', valuecode='LAST36'):
         url = 'http://data.stats.gov.cn/easyquery.htm'
         param = {
             "m": "QueryData",
@@ -455,7 +455,7 @@ class NBSAgent(RestAgent):
             "rowcode": "zb",
             "colcode": "sj",
             "wds" : '[]',
-            "dfwds": '[{"wdcode":"sj","valuecode":"LAST38"}, {"wdcode": "zb", "valuecode": "%s"}]' % (category),
+            "dfwds": '[{"wdcode":"sj","valuecode":"%s"}, {"wdcode": "zb", "valuecode": "%s"}]' % (valuecode, category),
         }
 
         url = 'http://data.stats.gov.cn/easyquery.htm?cn=%s&zb=%s' % (cn, category)
@@ -617,8 +617,8 @@ class NBSAgent(RestAgent):
     def get_house_price_index(self, city):
         return self._get_city_indicator(city, 'E0104', 'A0108', 'csyd')
 
-    def get_cpi(self):
-        return self._get_qg_indicator('A01', 'A010101', dbcode = 'hgyd')
+    def get_cpi(self, duration):
+        return self._get_qg_indicator('A01', 'A010101', dbcode = 'hgyd', valuecode=f'LAST{duration}')
 
     def get_region_cpi(self, region):
         return self._get_df_indicator(region, 'E0101', 'A010101', dbcode = 'fsyd')
@@ -638,8 +638,8 @@ class NBSAgent(RestAgent):
     def get_gdp_q2q(self):
         return self._get_qg_indicator('B01', 'A0104', dbcode = 'hgjd')
 
-    def get_gdp_q(self):
-        return self._get_qg_indicator('B01', 'A0103', dbcode = 'hgjd')
+    def get_gdp_q(self, duration):
+        return self._get_qg_indicator('B01', 'A0103', dbcode = 'hgjd', valuecode=f'LAST{duration}')
 
     def get_M0_M1_M2(self):
         return self._get_qg_indicator('A01', 'A0D01', dbcode = 'hgyd')

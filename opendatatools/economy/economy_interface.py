@@ -61,8 +61,8 @@ def get_population_structure_y():
 def get_house_price_index(region):
     return nbs_agent.get_house_price_index(region)
 
-def get_cpi():
-    return nbs_agent.get_cpi()
+def get_cpi(duration):
+    return nbs_agent.get_cpi(duration)
 
 def get_region_cpi(region):
     return nbs_agent.get_region_cpi(region)
@@ -82,8 +82,8 @@ def get_region_gdp(region):
 def get_gdp_q2q():
     return nbs_agent.get_gdp_q2q()
 
-def get_gdp_q():
-    return nbs_agent.get_gdp_q()
+def get_gdp_q(duration):
+    return nbs_agent.get_gdp_q(duration)
 
 def get_M0_M1_M2():
     return nbs_agent.get_M0_M1_M2()
