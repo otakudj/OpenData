@@ -49,8 +49,8 @@ def get_city_map():
 def get_gdp_y():
     return nbs_agent.get_gdp_y()
 
-def get_region_gdp_y():
-    return nbs_agent.get_region_gdp_y()
+def get_region_gdp_y(duration):
+    return nbs_agent.get_region_gdp_y(duration)
 
 def get_population_size_y():
     return nbs_agent.get_population_size_y()
@@ -67,8 +67,8 @@ def get_cpi(duration):
 def get_region_cpi(region):
     return nbs_agent.get_region_cpi(region)
 
-def get_ppi():
-    return nbs_agent.get_ppi()
+def get_ppi(duration):
+    return nbs_agent.get_ppi(duration)
 
 def get_region_ppi(region):
     return nbs_agent.get_region_ppi(region)
@@ -85,8 +85,8 @@ def get_gdp_q2q():
 def get_gdp_q(duration):
     return nbs_agent.get_gdp_q(duration)
 
-def get_M0_M1_M2():
-    return nbs_agent.get_M0_M1_M2()
+def get_M0_M1_M2(duration):
+    return nbs_agent.get_M0_M1_M2(duration)
 
 def get_fiscal_revenue():
     return nbs_agent.get_fiscal_revenue()
@@ -109,8 +109,8 @@ def get_import_export():
 def get_fdi():
     return nbs_agent.get_fdi()
 
-def get_retail_sales():
-    return nbs_agent.get_retail_sales()
+def get_retail_sales(duration):
+    return nbs_agent.get_retail_sales(duration)
 
 def get_online_retail_sales():
     return nbs_agent.get_online_retail_sales()

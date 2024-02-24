@@ -623,8 +623,8 @@ class NBSAgent(RestAgent):
     def get_region_cpi(self, region):
         return self._get_df_indicator(region, 'E0101', 'A010101', dbcode = 'fsyd')
 
-    def get_ppi(self):
-        return self._get_qg_indicator('A01', 'A010801', dbcode = 'hgyd')
+    def get_ppi(self, duration):
+        return self._get_qg_indicator('A01', 'A010801', dbcode = 'hgyd', valuecode=f'LAST{duration}')
 
     def get_region_ppi(self, region):
         return self._get_df_indicator(region, 'E0101', 'A0103', dbcode = 'fsyd')
@@ -641,8 +641,8 @@ class NBSAgent(RestAgent):
     def get_gdp_q(self, duration):
         return self._get_qg_indicator('B01', 'A0103', dbcode = 'hgjd', valuecode=f'LAST{duration}')
 
-    def get_M0_M1_M2(self):
-        return self._get_qg_indicator('A01', 'A0D01', dbcode = 'hgyd')
+    def get_M0_M1_M2(self, duration):
+        return self._get_qg_indicator('A01', 'A0D01', dbcode = 'hgyd', valuecode=f'LAST{duration}')
 
     def get_fiscal_revenue(self):
         return self._get_qg_indicator('A01', 'A1A01', dbcode = 'hgyd')
@@ -665,8 +665,8 @@ class NBSAgent(RestAgent):
     def get_fdi(self):
         return self._get_qg_indicator('A01', 'A1602', dbcode = 'hgyd')
 
-    def get_retail_sales(self):
-        return self._get_qg_indicator('A01', 'A0701', dbcode = 'hgyd')
+    def get_retail_sales(self, duration):
+        return self._get_qg_indicator('A01', 'A0701', dbcode = 'hgyd', valuecode=f'LAST{duration}')
 
     def get_online_retail_sales(self):
         return self._get_qg_indicator('A01', 'A1508', dbcode='hgyd')

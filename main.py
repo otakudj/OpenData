@@ -8,6 +8,8 @@ import pandas as pd
 from matplotlib.font_manager import FontManager
 import matplotlib
 matplotlib.rc("font", family='Microsoft YaHei')
+import matplotlib.dates as mdates
+from matplotlib import gridspec
 
 from data import date_gen, social_financing
 
@@ -17,14 +19,14 @@ config = [
             'func': 'get_cpi',
             'title': 'CPI',
             'utils': ['居民消费价格指数(上年同月=100)'],
-            'range': 86,
+            'range': 84,
         },
         {
             'func': 'get_gdp_q',
             'title': 'GDP',
             'utils': ['分季国内生产总值指数'],
             'unit': 'season',
-            'range': 29,
+            'range': 28,
         },
     ], [
         {
@@ -37,11 +39,13 @@ config = [
             'func': 'get_ppi',
             'title': 'PPI',
             'utils': ['工业生产者出厂价格指数(上年同月=100)'],
+            'range': 84,
         },
         {
             'func': '',
             'title': '社融',
             'utils': ['社会融资规模存量同比'],
+            'range': 84,
         },
     ], [
         {
@@ -52,18 +56,21 @@ config = [
     ]
 ]
 
-rows, columns = 2, 3
+rows, columns = 2, 2
 
 
-def plot_line_graph(ax, title_list, unit_list, date, value_list):
+def plot_line_graph(ax, title_list, unit_list, date, value_list, duration):
     x_axis_data = date.values  # x
     y_axis_data = value_list[0].values
 
-    x_axis_data = [date[:4] + '-' + date[4:] for date in x_axis_data]
+    x_axis_data = [np.datetime64(date[:4] + '-' + date[4:]) for date in x_axis_data]
+
+    # start = x_axis_data[0][:4] + '-' + x_axis_data[0][4:]
+    # pd.plotting.register_matplotlib_converters()
+    # x_axis_data = pd.period_range(start, periods=len(x_axis_data), freq='M')
 
     ax.set_title('&'.join(title_list))
-    x_tmp = [i for i in range(85)]
-    ax.plot(x_tmp, y_axis_data, 'bo-', alpha=1, linewidth=1, label=title_list[0])  # 'bo-'表示蓝色实线，数据点实心原点标注
+    ax.plot(x_axis_data, y_axis_data, 'bo-', alpha=1, linewidth=1, label=title_list[0])  # 'bo-'表示蓝色实线，数据点实心原点标注
     # plot中参数的含义分别是横轴值，纵轴值，线的形状（'s'方块,'o'实心圆点，'*'五角星   ...，颜色，透明度,线的宽度和标签 ，
 
     # plt.legend()  # 显示上面的label
@@ -73,26 +80,29 @@ def plot_line_graph(ax, title_list, unit_list, date, value_list):
 
     if len(unit_list) == len(value_list) == 2:
         if unit_list[1] == 'season':
-            x_twin_tmp = x_axis_data[::3]
+            x_axis_data = x_axis_data[::3]
         else:
-            x_twin_tmp = x_axis_data
+            x_axis_data = x_axis_data
 
         y_axis_data_twin = value_list[1].values
         ax_twin = ax.twinx()
-        ax_twin.plot(x_twin_tmp, y_axis_data_twin, 'ro-', alpha=1, linewidth=1, label=title_list[1])  # 'bo-'表示蓝色实线，数据点实心原点标注
+        ax_twin.plot(x_axis_data, y_axis_data_twin, 'ro-', alpha=1, linewidth=1, label=title_list[1])  # 'bo-'表示蓝色实线，数据点实心原点标注
         ax_twin.legend(loc='upper right')
 
     # ax.set_xticks(x_axis_data)
     ax.tick_params(axis='x', labelrotation=45)
     tick_spacing = 12
-    if unit_list[0] == 'month':
-        ax.xaxis.set_major_locator(ticker.MultipleLocator(3))
+    # if unit_list[0] == 'month':
+    locator = mdates.MonthLocator(interval=max(int(len(value_list[0]) / len(value_list) / 9), 1))
+    # formatter = mdates.ConciseDateFormatter(locator)
+    ax.xaxis.set_major_locator(locator)
+    # ax.xaxis.set_major_formatter(formatter)
 
 
 def data_preprocess(func, title, utils, unit, duration):
     if func != '':
         print(f'{func} ...', end='')
-        rsp, msg = getattr(economy, func)(duration)
+        rsp, msg = getattr(economy, func)(duration + 1)
         sleep(3)
         df = rsp[rsp['indicator_name'] == utils[0]][['date', 'value']].reset_index(drop=True)
         date = df['date']  # x
@@ -110,32 +120,35 @@ def data_preprocess(func, title, utils, unit, duration):
         value = value[::-1]
         date = date[::-1]
 
-        # remove last invalid data
-        if unit == 'month':
+        if df['value'][0] == 0:
             value = value[:-1]
             date = date[:-1]
+        else:
+            value = value[1:]
+            date = date[1:]
     else:
-        date = pd.Series(date_gen)
+        date = pd.Series(date_gen(duration))
 
         if title == '社融':
             print(f'{title} ...', end='')
-            value = pd.Series(social_financing[-37:])
+            value = pd.Series(social_financing[-duration:])
 
-        date = date[::-1]
-
-    if unit == 'season':
-        date = date[-41:]
-        value = value[-41:]
-    elif unit == 'year':
-        date = date[-4:]
-        value = value[-4:]
+    # if unit == 'season':
+    #     date = date[-41:]
+    #     value = value[-41:]
+    # elif unit == 'year':
+    #     date = date[-4:]
+    #     value = value[-4:]
 
     return date, value
 
 
 if __name__ == '__main__':
-    unit = 5
-    fig, ax = plt.subplots(rows, columns, figsize=(columns * unit, rows * unit))
+    scale = 5
+    fig = plt.figure(figsize=(columns * scale * 2, rows * scale))
+    spec = gridspec.GridSpec(ncols=columns, nrows=rows,
+                             width_ratios=[2, 1], wspace=0.2,
+                             hspace=0.3, height_ratios=[1, 1])
 
     for ind, values in enumerate(config):
         title_list, unit_list, value_list, date_list = [], [], [], []
@@ -144,7 +157,7 @@ if __name__ == '__main__':
             title = value['title']
             utils = value['utils']
             unit = value.get('unit', 'month')
-            duration = value.get('range', '38')
+            duration = value.get('range', 36)
 
             date, value = data_preprocess(func, title, utils, unit, duration)
 
@@ -153,10 +166,11 @@ if __name__ == '__main__':
             value_list.append(value)
             date_list.append(date)
 
-        plot_line_graph(ax[ind // columns][ind % columns], title_list,
-                        unit_list, date_list[0], value_list)
+        ax = fig.add_subplot(spec[ind])
+        plot_line_graph(ax, title_list,
+                        unit_list, date_list[0], value_list, duration)
         print('Done')
-        break
+        # break
 
     # # CPI
     # print('CPI ...', end='')
@@ -183,6 +197,6 @@ if __name__ == '__main__':
     # plot_line_graph(ind, date, value)
     # sleep(3)
     # print('Done')
-    fig.tight_layout()
+    # fig.tight_layout()
     # plt.ylim(-1,1)#仅设置y轴坐标范围
     plt.savefig(f'macro.jpg', dpi=100, bbox_inches='tight')
